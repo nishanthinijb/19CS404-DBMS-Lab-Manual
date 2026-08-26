@@ -26,8 +26,10 @@ END;
 ```
 
 ## 1. Write a trigger to log every insertion into a table.
-
-## PROGRAM
+**Steps:**
+- Create two tables: `employees` (for storing data) and `employee_log` (for logging the inserts).
+- Write an **AFTER INSERT** trigger on the `employees` table to log the new data into the `employee_log` table.
+PROGRAM:
 ```
 CREATE OR REPLACE TRIGGER trg_after_employee_insert
 AFTER INSERT ON employees
@@ -58,14 +60,17 @@ SELECT * FROM employee_log;
 ```
 
 **Expected Output:**
+- A new entry is added to the `employee_log` table each time a new record is inserted into the `employees` table.
+<img width="853" height="291" alt="image" src="https://github.com/user-attachments/assets/bd8c951b-94f7-464b-83b6-1c7b10aff2b7" />
 
-![image](https://github.com/user-attachments/assets/cf784a26-031d-4297-acdd-c00325826c7f)
 
 ---
 
 ## 2. Write a trigger to prevent deletion of records from a sensitive table.
-
-## PROGRAM
+**Steps:**
+- Write a **BEFORE DELETE** trigger on the `sensitive_data` table.
+- Use `RAISE_APPLICATION_ERROR` to prevent deletion and issue a custom error message.
+PROGRAM:
 ```
 CREATE OR REPLACE TRIGGER prevent_sensitive_data_deletion
 BEFORE DELETE ON sensitive_data
@@ -75,14 +80,16 @@ BEGIN
 END;
 ```
 **Expected Output:**
-
-![image](https://github.com/user-attachments/assets/2cad86cd-de05-4289-a04c-76815ed818c0)
+- If an attempt is made to delete a record from `sensitive_data`, an error message is raised, e.g., `ERROR: Deletion not allowed on this table.`
+<img width="847" height="401" alt="image" src="https://github.com/user-attachments/assets/d540ef4e-f8df-4a4f-832e-306abf1ce1ee" />
 
 ---
 
 ## 3. Write a trigger to automatically update a `last_modified` timestamp.
-
-## PROGRAM
+**Steps:**
+- Add a `last_modified` column to the `products` table.
+- Write a **BEFORE UPDATE** trigger on the `products` table to set the `last_modified` column to the current timestamp whenever an update occurs.
+PROGRAM
 ```
 
 CREATE TABLE products (
@@ -98,19 +105,18 @@ BEGIN
     :NEW.last_modified := SYSTIMESTAMP;
 END;
 /
-````
-UPDATE products SET product_name = 'New Product Name' WHERE product_id = 123;
-SELECT product_id, product_name, last_modified FROM products WHERE product_id = 123;
-
+```
 **Expected Output:**
-
-![image](https://github.com/user-attachments/assets/df495c47-c3ac-4e38-9b70-59e164ca3282)
+- The `last_modified` column in the `products` table is updated automatically to the current date and time when any record is updated.
+<img width="850" height="293" alt="image" src="https://github.com/user-attachments/assets/59ebac73-15e3-4101-9007-244796a377cf" />
 
 ---
 
 ## 4. Write a trigger to keep track of the number of updates made to a table.
-
-## PROGRAM
+**Steps:**
+- Create an `audit_log` table with a counter column.
+- Write an **AFTER UPDATE** trigger on the `customer_orders` table to increment the counter in the `audit_log` table every time a record is updated.
+PROGRAM:
 ```
 CREATE TABLE customer_orders (
     order_id NUMBER PRIMARY KEY,
@@ -137,18 +143,18 @@ END;
 UPDATE customer_orders SET order_status = 'Shipped' WHERE order_id = 1;
 SELECT update_count FROM audit_log WHERE table_name = 'customer_orders';
 ```
-
 **Expected Output:**
-
-![image](https://github.com/user-attachments/assets/ecc87ff2-45bf-4704-a810-cb7cc1237562)
+- The `audit_log` table will maintain a count of how many updates have been made to the `customer_orders` table.
+<img width="849" height="314" alt="image" src="https://github.com/user-attachments/assets/fe73dbb5-ce10-4d2e-91f0-dd1e9dfe445c" />
 
 ---
 
 ## 5. Write a trigger that checks a condition before allowing insertion into a table.
-
-## PROGRAM
+**Steps:**
+- Write a **BEFORE INSERT** trigger on the `employees` table to check if the inserted salary meets a specific condition (e.g., salary must be greater than 3000).
+- If the condition is not met, raise an error to prevent the insert.
+PROGRAM:
 ```
-
 INSERT INTO audit_log (table_name, update_count) VALUES ('customer_orders', 0);
 CREATE OR REPLACE TRIGGER customer_orders_update_audit
 AFTER UPDATE ON customer_orders
@@ -171,10 +177,9 @@ INSERT INTO employees (employee_id, employee_name, salary) VALUES (1, 'Alice Smi
 INSERT INTO employees (employee_id, employee_name, salary) VALUES (2, 'Bob Johnson', 2500);
 SELECT * from employees;
 ```
-
 **Expected Output:**
-
-![image](https://github.com/user-attachments/assets/92b4c4a2-3d1f-4b87-a9f2-84b246f7d25a)
+- If the inserted salary in the `employees` table is below the condition (e.g., salary < 3000), the insert operation is blocked, and an error message is raised, such as: `ERROR: Salary below minimum threshold.`
+<img width="850" height="328" alt="image" src="https://github.com/user-attachments/assets/a987ed5c-6045-4660-bffa-4fb009263cd6" />
 
 
 ## RESULT
